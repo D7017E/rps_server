@@ -40,7 +40,7 @@ def serialize_image_array(arr, dtype=np.uint8):
         Serialized image.
     """
     if isinstance(arr, list):
-        arr = np.array(arr, dtype=np.uint8)
+        arr = np.array(arr, dtype=dtype)
     return arr.tobytes()
 
 def deserialize_image(arr, dtype=np.uint8, shape=None):
