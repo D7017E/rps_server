@@ -4,11 +4,11 @@ sys.path.append("./src")
 
 import base64
 import json
-import requests
 import numpy as np
-from util.serialize_image import serialize_image, serialize_image_array, deserialize_image
+import requests
+from util.serialize_image import serialize_image
 
-def make_request(image):
+def make_request_to_pneumonia_model(image, grayscale):
     """
     Send a request to the server.
 
@@ -16,26 +16,32 @@ def make_request(image):
     ----------
     image : numpy.ndarray
         The image to send to the server
+    grayscale : bool
+        Whether the image is grayscale or not
     """
-    image_bytes = serialize_image_array(image)
+    print("Preparing request...")
+    image_bytes = serialize_image(image, grayscale)
     image_str = base64.b64encode(image_bytes).decode("utf8")
 
     request_body = json.dumps({
         "image": image_str,
-        "dtype": image.dtype.name,
-        "shape": list(image.shape)
+        "dtype": np.uint8.__name__,
+        "shape": [1, 100, 100, 1]
     })
-    print(request_body)
+    
     request_headers = headers={"Content-Type": "application/json"}
 
     URL = "http://127.0.0.1:5000/predict/hand"
+    print("Sending request...")
     response = requests.get(URL, data=request_body, headers=request_headers)
+    print("Response received\n")
     if response.status_code == 200:
         print(response.json())
     else:
-        print(f"Something went wrong, status code: {response.status_code}")
+        print(f"Something went wrong.")
+        print(f"Status code: {response.status_code}")
+        print(f"Response: {response.text}")
 
 
 if __name__ == "__main__":
-    image = np.array([[[36,28,237],[76,177,34]],[[232,162,0],[255,255,255]]], dtype=np.uint8)
-    make_request(image)
+    make_request_to_pneumonia_model("./images/scaled_pneumonia.jpeg", True)

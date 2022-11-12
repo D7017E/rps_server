@@ -11,5 +11,5 @@ See the [Prerequisites](../README.md#Prerequisites) section in [README.md](../RE
 Start the application with:
 
 ```bash
-python test-tool/sendRequest.py 
+python sendRequest.py 
 ```
