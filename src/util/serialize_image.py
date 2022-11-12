@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def serialize_image(fid):
+def serialize_image(fid, grayscale=False):
     """
     Serialize an image from a file.
 
@@ -9,6 +9,9 @@ def serialize_image(fid):
     ----------
     fid : str
         Path to the image file to serialize.
+    grayscale : bool
+        If true, the image will be read as grayscale single channel image. Otherwise, 
+        the image will be read as an RGB image. Default value is `False`.
 
     Returns
     -------
@@ -22,7 +25,8 @@ def serialize_image(fid):
     >>> serialize_image("rgbw.png")
     b'$\x1c\xedL\xb1"\xe8\xa2\x00\xff\xff\xff'
     """
-    im = cv2.imread(fid)
+    colormode = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
+    im = cv2.imread(fid, colormode)
     return np.array(im.tolist(), dtype=np.uint8).tobytes()
 
 def serialize_image_array(arr, dtype=np.uint8):
@@ -33,6 +37,8 @@ def serialize_image_array(arr, dtype=np.uint8):
     ----------
     arr : numpy.ndarray or list
         Image array to serialize.
+    dtype : type
+        Data type of the array. Default value is `np.uint8`.
     
     Returns
     -------

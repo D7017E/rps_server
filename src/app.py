@@ -1,10 +1,20 @@
 import os
 import numpy as np
 import base64
+import ai
+from dotenv import load_dotenv
 from flask import Flask, flash, request, redirect, url_for
 from util.serialize_image import serialize_image, serialize_image_array, deserialize_image
 
+load_dotenv()
+
 app = Flask(__name__)
+
+# Load AI model
+ai_model_name = os.environ.get("AI_MODEL_NAME", "pneumonia")
+ai_model_input_shape = os.environ.get("AI_INPUT_SHAPE", "(1, 100, 100, 1)")
+ai.load_model(ai_model_name, ai_model_input_shape)
+print(f"AI model: successfully loaded model '{ai_model_name}'")
 
 @app.route("/")
 def hello_world():
@@ -16,12 +26,14 @@ def predict_hand():
 
     image_bytes = base64.b64decode(req_body["image"].encode("utf8"))
     image_shape = tuple(req_body["shape"])
-    image = deserialize_image(image_bytes, np.uint8, image_shape).tolist()
+    image = deserialize_image(image_bytes, np.uint8, image_shape)
 
-    # TODO: Replace this with the AI model's prediction
-    res = {
-        "data": image
-    }
+    try:
+        prediction = ai.predict(image)
+    except ai.AIException as e:
+        return {"error": str(e)}, 400
+    except:
+        return {"error": "Internal server error"}, 500
 
-    return res
+    return {"prediction": prediction}, 200
 
