@@ -4,7 +4,7 @@ A server application to expose an interface to an saved TensorFlow model and use
 
 ## Prerequisites
 
-- Python 3 - [Download and install Python 3](https://www.python.org/downloads/).
+- Python 3.10 - [Download and install Python](https://www.python.org/downloads/).
 
 - Docker - [Download and install Docker](https://docs.docker.com/get-docker/). This is required to run the application in a container.
 
