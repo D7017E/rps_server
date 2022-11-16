@@ -1,7 +1,9 @@
+import os
 import cv2
 import mediapipe as mp
 import numpy as np
 
+ai_model_dir = os.path.join(os.path.dirname(__file__), "../saved_models/")
 
 gesture = {    
     0:'fist', 1:'one', 2:'two', 3:'three', 4:'four', 5:'five',
@@ -12,7 +14,11 @@ rps_gesture = {0:'rock', 5:'paper', 9:'scissors'}
 hands = None
 knn = None
 
-def load_model():
+def load_model(joint_document):
+    joint_path = os.path.join(ai_model_dir, joint_document)
+    if not os.path.exists(joint_path):
+        raise AIException(f"{model_path}: No such file or directory")
+
     max_num_hands = 1
 
     # MediaPipe hands model
@@ -24,7 +30,7 @@ def load_model():
         min_tracking_confidence=0.5)
 
     # Gesture recognition model
-    file = np.genfromtxt('C:/Users/RIckard/Image-Recognition/research/data/gesture_train.csv', delimiter=',')
+    file = np.genfromtxt(joint_path, delimiter=',')
     angle = file[:,:-1].astype(np.float32)
     label = file[:, -1].astype(np.float32)
     global knn

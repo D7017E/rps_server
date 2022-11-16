@@ -16,7 +16,7 @@ app = Flask(__name__)
 # ai_model_input_shape = os.environ.get("AI_INPUT_SHAPE", "(1, 100, 100, 1)")
 # ai.load_model(ai_model_name, ai_model_input_shape)
 # print(f"AI model: successfully loaded model '{ai_model_name}'")
-ai_mediapipe.load_model()
+ai_mediapipe.load_model("gesture_train.csv")
 
 
 @app.route("/")
