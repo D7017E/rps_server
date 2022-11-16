@@ -17,7 +17,6 @@ def load_model():
 
     # MediaPipe hands model
     mp_hands = mp.solutions.hands
-    mp_drawing = mp.solutions.drawing_utils
     global hands
     hands = mp_hands.Hands(
         max_num_hands=max_num_hands,

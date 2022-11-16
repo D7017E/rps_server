@@ -31,7 +31,7 @@ def make_http_request_to_ai(image, grayscale):
         "shape": list(shape)
     })
     
-    request_headers = headers={"Content-Type": "application/json"}
+    request_headers = {"Content-Type": "application/json"}
 
     URL = "http://127.0.0.1:5000/predict/hand"
     print("Sending request...")
