@@ -2,13 +2,15 @@ import sys
 sys.path.append("../src")
 sys.path.append("./src")
 
+import cv2
 import base64
 import json
 import numpy as np
 import requests
 from util.serialize_image import serialize_image
+import ai_mediapipe
 
-def make_request_to_pneumonia_model(image, grayscale):
+def make_http_request_to_ai(image, grayscale):
     """
     Send a request to the server.
 
@@ -20,13 +22,13 @@ def make_request_to_pneumonia_model(image, grayscale):
         Whether the image is grayscale or not
     """
     print("Preparing request...")
-    image_bytes = serialize_image(image, grayscale)
+    image_bytes, shape, channel_type = serialize_image(image, grayscale)
     image_str = base64.b64encode(image_bytes).decode("utf8")
 
     request_body = json.dumps({
         "image": image_str,
-        "dtype": np.uint8.__name__,
-        "shape": [1, 100, 100, 1]
+        "dtype": channel_type.name,
+        "shape": list(shape)
     })
     
     request_headers = headers={"Content-Type": "application/json"}
@@ -43,5 +45,14 @@ def make_request_to_pneumonia_model(image, grayscale):
         print(f"Response: {response.text}")
 
 
+def make_local_prediction(path):
+    image = cv2.imread(path)
+    ai_mediapipe.load_model()
+    pred = ai_mediapipe.predict(image)
+    print(pred)
+
 if __name__ == "__main__":
-    make_request_to_pneumonia_model("./images/scaled_pneumonia.jpeg", True)
+    # make_http_request_to_ai("./images/elie_rock.jpg", False)
+    make_http_request_to_ai("./images/rickard_paper.jpg", False)
+    # make_local_prediction("./images/elie_rock.jpg")
+
