@@ -5,3 +5,4 @@ python-dotenv==0.21.0
 requests==2.27.1
 tensorflow==2.8.0
 protobuf==3.20.*
+mediapipe==0.9.0
