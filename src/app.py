@@ -19,6 +19,35 @@ app = Flask(__name__)
 ai_mediapipe.load_model("gesture_train.csv")
 
 
+def predictImage(image):
+    prediction = ai_mediapipe.predict(image)
+    return prediction
+
+def weightedPrediction(imageList):
+    print("dummy")
+
+"""
+    req[
+        body[
+            imageList[
+                image: ----
+            ]
+            shape: ----
+        ]
+    ]
+"""
+
+def predict_list(req_body):
+    image_list = req_body["image_list"]
+    shape = req_body["shape"]
+    predictions = []
+    for i in req_body:
+        image_bytes = base64.b64decode(image_list["image"].encode("utf8"))
+        image = deserialize_image(image_bytes, np.uint8, shape)
+        predictions.append(predictImage(image))
+
+    return prediction
+
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
@@ -26,12 +55,9 @@ def hello_world():
 @app.route("/predict/hand", methods=['GET'])
 def predict_hand():
     req_body = request.get_json()
+    shape = req_body["shape"]
 
-    image_bytes = base64.b64decode(req_body["image"].encode("utf8"))
-    image_shape = tuple(req_body["shape"])
-    image = deserialize_image(image_bytes, np.uint8, image_shape)
-
-    prediction = ai_mediapipe.predict(image)
+    prediction = predict_list(req_body)
     # try:
     #     prediction = ai.predict(image)
     # except ai.AIException as e:

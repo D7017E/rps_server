@@ -53,6 +53,6 @@ def make_local_prediction(path):
 
 if __name__ == "__main__":
     # make_http_request_to_ai("./images/elie_rock.jpg", False)
-    make_http_request_to_ai("./images/rickard_paper.jpg", False)
+    make_http_request_to_ai("./images/elie_rock.jpg", False)
     # make_local_prediction("./images/elie_rock.jpg")
 
