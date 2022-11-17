@@ -91,8 +91,8 @@ class TestPredictList(unittest.TestCase):
             Prediction.FAIL,
             Prediction.NOTHING,
             Prediction.ROCK,
-            Prediction.SCISSOR,
             Prediction.PAPER,
+            Prediction.SCISSOR,
         ])
         self.assertEqual(
             result, 
