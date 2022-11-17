@@ -20,7 +20,7 @@ class Mediapipe(metaclass=Singleton):
         self.load_model(csv, self.__ai_model_dir)
         
 
-    def load_model(self, joint_document, model_dir):
+    def __load_model(self, joint_document, model_dir):
         joint_path = os.path.join(model_dir, joint_document)
         if not os.path.exists(joint_path):
             raise AIException(f"{joint_path}: No such file or directory")
