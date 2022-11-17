@@ -19,6 +19,7 @@ app = Flask(__name__)
 ai_mediapipe.load_model("gesture_train.csv")
 
 
+# Takes the list of individual predictions and returns the weighted output. later predictions are valued higher.
 def weighted_prediction(prediction_list: list) -> str:
     predictions = {
         "fail": 0,
@@ -35,11 +36,14 @@ def weighted_prediction(prediction_list: list) -> str:
     prediction = max(predictions, key=predictions.get)
     return prediction
 
+
+# Redirects a single image to mediapipe for prediction and returns the result.
 def predict_image(image: np.ndarray) -> str:
     prediction = ai_mediapipe.predict(image)
     return prediction
 
 """
+    mock up of the json structure
     req[
         body[
             imageList[
@@ -51,6 +55,7 @@ def predict_image(image: np.ndarray) -> str:
 """
 
 # Take in the list of serialized images, decodes them and send them to predict_image to get a prediction for each individual image.
+# Returns a weighted prediction in the form of a string.
 def predict_list(req_body: str) -> str:
     image_list = req_body["image_list"]
     shape = req_body["shape"]
