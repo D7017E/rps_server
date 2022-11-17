@@ -54,7 +54,7 @@ def predict_image(image: np.ndarray) -> str:
     ]
 """
 
-# Take in the list of serialized images, decodes them and send them to predict_image to get a prediction for each individual image.
+# Take in the list of serialized images in the form of a JSON, decodes them and send them to predict_image to get a prediction for each individual image.
 # Returns a weighted prediction in the form of a string.
 def predict_list(req_body: str) -> str:
     image_list = req_body["image_list"]
@@ -66,8 +66,8 @@ def predict_list(req_body: str) -> str:
         deserialized_image = deserialize_image(image_bytes, np.uint8, shape)
         predictions.append(predict_image(deserialized_image))
 
-    weighted_prediction = weighted_prediction(predictions)
-    return weighted_prediction
+    prediction = weighted_prediction(predictions)
+    return prediction
 
 @app.route("/")
 def hello_world():
