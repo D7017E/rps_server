@@ -2,14 +2,9 @@ import os
 import cv2
 import mediapipe as mp
 import numpy as np
+from prediction import Prediction
 
 ai_model_dir = os.path.join(os.path.dirname(__file__), "../saved_models/")
-
-gesture = {    
-    0:'fist', 1:'one', 2:'two', 3:'three', 4:'four', 5:'five',
-    6:'six', 7:'rock', 8:'spiderman', 9:'yeah', 10:'ok',
-}
-rps_gesture = {0:'rock', 5:'paper', 9:'scissors'}
 
 hands = None
 knn = None
@@ -38,7 +33,7 @@ def load_model(joint_document):
     knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 
 
-def predict(image):
+def predict(image) -> Prediction:
     img = cv2.flip(image, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -69,13 +64,6 @@ def predict(image):
             ret, results, neighbours, dist = knn.findNearest(data, 3)
             idx = int(results[0][0])
 
-            # Draw gesture result
-            if idx in rps_gesture.keys():
-                print(f"Identified gesture is {rps_gesture.get(idx)}")
-                return rps_gesture.get(idx)
-            else:
-                print("No gesture identified")
-                return -1
+            return Prediction(idx)
     else:
-        print("No hands detected")
-        return -2
+        return Prediction(0)

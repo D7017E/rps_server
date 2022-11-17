@@ -26,8 +26,8 @@ def make_http_request_to_ai(image, grayscale):
     image_str = base64.b64encode(image_bytes).decode("utf8")
 
     request_body = json.dumps({
-        "image": image_str,
-        "dtype": channel_type.name,
+        "image_list": [image_str],
+        # "dtype": channel_type.name,
         "shape": list(shape)
     })
     
@@ -53,6 +53,6 @@ def make_local_prediction(path):
 
 if __name__ == "__main__":
     # make_http_request_to_ai("./images/elie_rock.jpg", False)
-    make_http_request_to_ai("./images/rickard_paper.jpg", False)
+    make_http_request_to_ai("./images/elie_rock.jpg", False)
     # make_local_prediction("./images/elie_rock.jpg")
 
