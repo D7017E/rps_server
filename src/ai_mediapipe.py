@@ -12,7 +12,7 @@ knn = None
 def load_model(joint_document):
     joint_path = os.path.join(ai_model_dir, joint_document)
     if not os.path.exists(joint_path):
-        raise AIException(f"{model_path}: No such file or directory")
+        raise Exception(f"{joint_path}: No such file or directory")
 
     max_num_hands = 1
 
