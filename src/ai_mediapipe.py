@@ -42,7 +42,7 @@ class Mediapipe(metaclass=Singleton):
         self.__knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 
 
-    def predict(self, image) -> Prediction:
+    def __predict(self, image) -> Prediction:
         img = cv2.flip(image, 1)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
