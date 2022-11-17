@@ -3,11 +3,12 @@ import numpy as np
 import base64
 # import ai_tensorflow
 import ai_mediapipe
-from dotenv import load_dotenv
+from prediction import Prediction
 from flask import Flask, flash, request, redirect, url_for
 from util.serialize_image import serialize_image, serialize_image_array, deserialize_image
 
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 
 app = Flask(__name__)
 
@@ -20,14 +21,8 @@ ai_mediapipe.load_model("gesture_train.csv")
 
 
 # Takes the list of individual predictions and returns the weighted output. later predictions are valued higher.
-def weighted_prediction(prediction_list: list) -> str:
-    predictions = {
-        "fail": 0,
-        "nothing": 0,
-        "rock": 0,
-        "paper": 0,
-        "scissors": 0,
-    }
+def weighted_prediction(prediction_list: list) -> Prediction:
+    predictions: dict = Prediction.empty_prediction_dict()
     for prediction in prediction_list:
         try:
             predictions[prediction] += 1 / (len(predict_list) * 2)
