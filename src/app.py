@@ -26,7 +26,7 @@ def weighted_prediction(prediction_list: list) -> Prediction:
 def predict_image(image: np.ndarray) -> Prediction:
     """Redirects a single image to mediapipe for prediction and returns the 
     result."""
-    prediction: Prediction = model.__predict(image)
+    prediction: Prediction = model.predict(image)
     return prediction
 
 
