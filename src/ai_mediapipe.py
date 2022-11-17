@@ -79,4 +79,4 @@ class Mediapipe(metaclass=Singleton):
 
 class AIException(Exception):
     """Exception class for AI errors."""
-pass
+    pass
