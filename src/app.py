@@ -21,11 +21,23 @@ ai_mediapipe.load_model("gesture_train.csv")
 
 
 # Takes the list of individual predictions and returns the weighted output. later predictions are valued higher.
+<<<<<<< HEAD
 def weighted_prediction(prediction_list: list) -> Prediction:
     predictions: dict = Prediction.empty_prediction_dict()
     for prediction in prediction_list:
+=======
+def weighted_prediction(prediction_list: list) -> str:
+    predictions = {
+        "fail": 0,
+        "nothing": 0,
+        "rock": 0,
+        "paper": 0,
+        "scissors": 0,
+    }
+    for i, prediction in enumerate(prediction_list):
+>>>>>>> fed7fff090901d87c9e318fc673d6ceadeda52ef
         try:
-            predictions[prediction] += 1 / (len(predict_list) * 2)
+            predictions[prediction] += 1 + (i / (len(prediction_list) * 2))
         except:
             print("Unhandled prediction")
     prediction = max(predictions, key=predictions.get)
