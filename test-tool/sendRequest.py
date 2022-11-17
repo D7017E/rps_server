@@ -26,8 +26,8 @@ def make_http_request_to_ai(image, grayscale):
     image_str = base64.b64encode(image_bytes).decode("utf8")
 
     request_body = json.dumps({
-        "image": image_str,
-        "dtype": channel_type.name,
+        "image_list": [image_str],
+        # "dtype": channel_type.name,
         "shape": list(shape)
     })
     
