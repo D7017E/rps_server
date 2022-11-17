@@ -17,7 +17,7 @@ class Mediapipe(metaclass=Singleton):
     __knn = None
 
     def __init__(self, csv) -> None:
-        self.load_model(csv, self.__ai_model_dir)
+        self.__load_model(csv, self.__ai_model_dir)
         
 
     def __load_model(self, joint_document, model_dir):
