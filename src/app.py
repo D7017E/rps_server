@@ -28,9 +28,9 @@ def weighted_prediction(prediction_list: list) -> str:
         "paper": 0,
         "scissors": 0,
     }
-    for prediction in prediction_list:
+    for i, prediction in enumerate(prediction_list):
         try:
-            predictions[prediction] += 1 / (len(predict_list) * 2)
+            predictions[prediction] += 1 + (i / (len(prediction_list) * 2))
         except:
             print("Unhandled prediction")
     prediction = max(predictions, key=predictions.get)
