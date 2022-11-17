@@ -1,13 +1,13 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class Prediction(Enum):
+class Prediction(IntEnum):
     """Enum for predictions"""
     FAIL = 0
     NOTHING = 1
     ROCK = 2
     PAPER = 3
-    SCISSOR = 4
+    SCISSORS = 4
 
     @staticmethod
     def empty_prediction_dict() -> dict:
@@ -17,5 +17,6 @@ class Prediction(Enum):
             Prediction.NOTHING: 0,
             Prediction.ROCK: 0,
             Prediction.PAPER: 0,
-            Prediction.SCISSOR: 0,
+            Prediction.SCISSORS: 0,
         }
+        

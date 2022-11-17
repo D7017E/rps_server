@@ -31,7 +31,7 @@ class TestPredictList(unittest.TestCase):
             Prediction.NOTHING,
             Prediction.ROCK,
             Prediction.PAPER,
-            Prediction.SCISSOR,
+            Prediction.SCISSORS,
             Prediction.FAIL,
         ])
         self.assertEqual(
@@ -46,7 +46,7 @@ class TestPredictList(unittest.TestCase):
             Prediction.FAIL,
             Prediction.ROCK,
             Prediction.PAPER,
-            Prediction.SCISSOR,
+            Prediction.SCISSORS,
             Prediction.NOTHING,
         ])
         self.assertEqual(
@@ -61,7 +61,7 @@ class TestPredictList(unittest.TestCase):
             Prediction.FAIL,
             Prediction.NOTHING,
             Prediction.PAPER,
-            Prediction.SCISSOR,
+            Prediction.SCISSORS,
             Prediction.ROCK,
         ])
         self.assertEqual(
@@ -76,7 +76,7 @@ class TestPredictList(unittest.TestCase):
             Prediction.FAIL,
             Prediction.NOTHING,
             Prediction.ROCK,
-            Prediction.SCISSOR,
+            Prediction.SCISSORS,
             Prediction.PAPER,
         ])
         self.assertEqual(
@@ -92,12 +92,12 @@ class TestPredictList(unittest.TestCase):
             Prediction.NOTHING,
             Prediction.ROCK,
             Prediction.PAPER,
-            Prediction.SCISSOR,
+            Prediction.SCISSORS,
         ])
         self.assertEqual(
             result, 
-            Prediction.SCISSOR, 
-            f"expected {Prediction.SCISSOR.name} got {result.name}",
+            Prediction.SCISSORS, 
+            f"expected {Prediction.SCISSORS.name} got {result.name}",
         )
 
 
