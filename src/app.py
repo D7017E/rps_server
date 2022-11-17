@@ -19,12 +19,25 @@ app = Flask(__name__)
 ai_mediapipe.load_model("gesture_train.csv")
 
 
-def predictImage(image):
-    prediction = ai_mediapipe.predict(image)
+def weighted_prediction(prediction_list):
+    predictions = {
+        "fail": 0,
+        "nothing": 0,
+        "rock": 0,
+        "paper": 0,
+        "scissors": 0,
+    }
+    for prediction in prediction_list:
+        try:
+            predictions[prediction] += 1 / (len(predict_list) * 2)
+        except:
+            print("Unhandled prediction")
+    prediction = max(predictions, key=predictions.get)
     return prediction
 
-def weightedPrediction(imageList):
-    print("dummy")
+def predictImage(image):
+    prediction = ai_mediapipe.predict(image)    
+    return prediction
 
 """
     req[
@@ -41,12 +54,14 @@ def predict_list(req_body):
     image_list = req_body["image_list"]
     shape = req_body["shape"]
     predictions = []
-    for i in req_body:
-        image_bytes = base64.b64decode(image_list["image"].encode("utf8"))
-        image = deserialize_image(image_bytes, np.uint8, shape)
-        predictions.append(predictImage(image))
+    for image in image_list:
+        image_bytes = base64.b64decode(image.encode("utf8"))
+        deserialized_image = deserialize_image(image_bytes, np.uint8, shape)
+        predictions.append(predictImage(deserialized_image))
 
-    return prediction
+    weighted_prediction = weightedPrediction(predictions)
+
+    return weighted_prediction
 
 @app.route("/")
 def hello_world():
@@ -55,7 +70,6 @@ def hello_world():
 @app.route("/predict/hand", methods=['GET'])
 def predict_hand():
     req_body = request.get_json()
-    shape = req_body["shape"]
 
     prediction = predict_list(req_body)
     # try:
