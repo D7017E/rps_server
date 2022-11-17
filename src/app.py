@@ -35,7 +35,7 @@ def weighted_prediction(prediction_list):
     prediction = max(predictions, key=predictions.get)
     return prediction
 
-def predictImage(image):
+def predict_image(image):
     prediction = ai_mediapipe.predict(image)    
     return prediction
 
@@ -57,9 +57,9 @@ def predict_list(req_body):
     for image in image_list:
         image_bytes = base64.b64decode(image.encode("utf8"))
         deserialized_image = deserialize_image(image_bytes, np.uint8, shape)
-        predictions.append(predictImage(deserialized_image))
+        predictions.append(predict_image(deserialized_image))
 
-    weighted_prediction = weightedPrediction(predictions)
+    weighted_prediction = weighted_prediction(predictions)
 
     return weighted_prediction
 
