@@ -7,7 +7,8 @@ import ai_mediapipe
 from prediction import Prediction
 
 app = Flask(__name__)
-ai_mediapipe.load_model("gesture_train.csv")
+# ai_mediapipe.load_model("gesture_train.csv")
+model = ai_mediapipe.Mediapipe("gesture_train.csv")
 
 def weighted_prediction(prediction_list: list) -> Prediction:
     """Takes the list of individual predictions and returns the weighted 
@@ -25,7 +26,7 @@ def weighted_prediction(prediction_list: list) -> Prediction:
 def predict_image(image: np.ndarray) -> Prediction:
     """Redirects a single image to mediapipe for prediction and returns the 
     result."""
-    prediction: Prediction = ai_mediapipe.predict(image)
+    prediction: Prediction = model.predict(image)
     return prediction
 
 
