@@ -2,15 +2,15 @@ import sys
 sys.path.append("../src")
 sys.path.append("./src")
 
+import ai_mediapipe
 import cv2
 import base64
 import json
 import numpy as np
 import requests
 from util.serialize_image import serialize_image
-import ai_mediapipe
 
-def make_http_request_to_ai(image, grayscale):
+def make_http_request_to_ai(images, grayscale):
     """
     Send a request to the server.
 
@@ -22,12 +22,15 @@ def make_http_request_to_ai(image, grayscale):
         Whether the image is grayscale or not
     """
     print("Preparing request...")
-    image_bytes, shape, channel_type = serialize_image(image, grayscale)
-    image_str = base64.b64encode(image_bytes).decode("utf8")
+    serialized_images = []
+    for image in images:
+        image_bytes, shape, channel_type = serialize_image(image, grayscale)
+        image_str = base64.b64encode(image_bytes).decode("utf8")
+        serialized_images.append(image_str)
 
     request_body = json.dumps({
-        "image_list": [image_str],
-        # "dtype": channel_type.name,
+        "image_list": serialized_images,
+        "dtype": channel_type.name,
         "shape": list(shape)
     })
     
@@ -52,7 +55,5 @@ def make_local_prediction(path):
     print(pred)
 
 if __name__ == "__main__":
-    # make_http_request_to_ai("./images/elie_rock.jpg", False)
-    make_http_request_to_ai("./images/elie_rock.jpg", False)
-    # make_local_prediction("./images/elie_rock.jpg")
+    make_http_request_to_ai(["./images/elie_rock.jpg"], False)
 
