@@ -53,7 +53,7 @@ def predict_image(image: np.ndarray) -> str:
 # Returns a weighted prediction in the form of a string.
 def predict_list(req_body: str) -> str:
     image_list = req_body["image_list"]
-    shape = req_body["shape"]
+    shape = tuple(req_body["shape"])
     
     predictions = []
     for image in image_list:
