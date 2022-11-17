@@ -75,7 +75,7 @@ def predict(image):
                 return rps_gesture.get(idx)
             else:
                 print("No gesture identified")
-                return -1
+                return "nothing"
     else:
         print("No hands detected")
-        return -2
+        return "fail"
