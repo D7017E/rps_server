@@ -34,8 +34,8 @@ def predict_list(req_body: str) -> Prediction:
     them and send them to predict_image to get a prediction for each individual 
     image. Returns a weighted prediction in the form of a string."""
     image_list = req_body["image_list"]
-    shape = req_body["shape"]
-
+    shape = tuple(req_body["shape"])
+    
     predictions = []
     for image in image_list:
         image_bytes = base64.b64decode(image.encode("utf8"))
