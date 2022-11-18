@@ -3,6 +3,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 from prediction import Prediction
+import uuid
 
 ai_model_dir = os.path.join(os.path.dirname(__file__), "../saved_models/")
 
@@ -33,7 +34,7 @@ def load_model(joint_document):
     knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 
 
-def predict(image) -> Prediction:
+def predict(image, generate_data=False) -> Prediction:
     img = cv2.flip(image, 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -63,7 +64,29 @@ def predict(image) -> Prediction:
             data = np.array([angle], dtype=np.float32)
             ret, results, neighbours, dist = knn.findNearest(data, 3)
             idx = int(results[0][0])
-
+            if save_data:
+                save_data_to(data, image)
             return Prediction(idx)
     else:
         return Prediction(0)
+
+def save_data_to(data, image):
+    data_id = uuid.uuid4().hex
+    joint_filename = data_id + ".csv"
+    image_filename = data_id + ".jpg"
+
+    path_to_directory = os.path.join(ai_model_dir, "data_collection")
+    if not os.path.exists(path_to_directory):
+        os.makedirs(path_to_directory)
+
+    joint_filepath = os.path.join(path_to_directory, joint_filename)
+    image_filepath = os.path.join(path_to_directory, image_filename)
+
+    joint_coordinates_str = ",".join(map(str, np.around(data[0], decimals=6)))
+
+    f = open(joint_filepath, "w")
+    f.write(joint_coordinates_str)
+    f.close()
+    cv2.imwrite(image_filepath, image)
+
+    print("Saved data to: " + joint_filepath)
