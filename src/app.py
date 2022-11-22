@@ -1,7 +1,8 @@
 import numpy as np
+import cv2
 import base64
 from util.serialize_image import deserialize_image
-from flask import Flask, request
+from flask import Flask, request, send_file
 
 import ai_mediapipe
 from prediction import Prediction
@@ -25,7 +26,7 @@ def weighted_prediction(prediction_list: list) -> Prediction:
 def predict_image(image: np.ndarray) -> Prediction:
     """Redirects a single image to mediapipe for prediction and returns the 
     result."""
-    prediction: Prediction = ai_mediapipe.predict(image)
+    prediction: Prediction = ai_mediapipe.predict(image, True)
     return prediction
 
 
@@ -35,7 +36,7 @@ def predict_list(req_body: str) -> Prediction:
     image. Returns a weighted prediction in the form of a string."""
     image_list = req_body["image_list"]
     shape = tuple(req_body["shape"])
-    
+
     predictions = []
     for image in image_list:
         image_bytes = base64.b64decode(image.encode("utf8"))
@@ -50,3 +51,9 @@ def predict_hand():
     req_body = request.get_json()
     prediction: Prediction = predict_list(req_body)
     return {"prediction": prediction.name}, 200
+
+@app.route("/predict/latest", methods=['GET'])
+def get_latest_img():
+    res = send_file('../saved_models/data_collection/latest.jpg', mimetype ='image/jpg')
+    res.headers["Cache-Control"] = "no-cache"
+    return res

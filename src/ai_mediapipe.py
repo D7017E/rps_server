@@ -64,7 +64,7 @@ def predict(image, generate_data=False) -> Prediction:
             data = np.array([angle], dtype=np.float32)
             ret, results, neighbours, dist = knn.findNearest(data, 3)
             idx = int(results[0][0])
-            if save_data:
+            if generate_data:
                 save_data_to(data, image)
             return Prediction(idx)
     else:
@@ -73,7 +73,8 @@ def predict(image, generate_data=False) -> Prediction:
 def save_data_to(data, image):
     data_id = uuid.uuid4().hex
     joint_filename = data_id + ".csv"
-    image_filename = data_id + ".jpg"
+    image_filename = data_id + ".jpg"	
+    latest_filename = "latest.jpg"
 
     path_to_directory = os.path.join(ai_model_dir, "data_collection")
     if not os.path.exists(path_to_directory):
@@ -81,6 +82,7 @@ def save_data_to(data, image):
 
     joint_filepath = os.path.join(path_to_directory, joint_filename)
     image_filepath = os.path.join(path_to_directory, image_filename)
+    latest_filepath = os.path.join(path_to_directory, latest_filename)
 
     joint_coordinates_str = ",".join(map(str, np.around(data[0], decimals=6)))
 
@@ -88,5 +90,6 @@ def save_data_to(data, image):
     f.write(joint_coordinates_str)
     f.close()
     cv2.imwrite(image_filepath, image)
+    cv2.imwrite(latest_filepath, image)
 
     print("Saved data to: " + joint_filepath)
