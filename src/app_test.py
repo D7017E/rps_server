@@ -1,8 +1,6 @@
 import unittest
-
 from prediction import Prediction
 from app import *
-
 
 class TestPredictList(unittest.TestCase):
     """Tests for weighted_predictions"""
