@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 import base64
+import re
+import os
 from util.serialize_image import deserialize_image
 from flask import Flask, request, send_file
 
@@ -52,8 +54,16 @@ def predict_hand():
     prediction: Prediction = predict_list(req_body)
     return {"prediction": prediction.name}, 200
 
-@app.route("/predict/latest", methods=['GET'])
-def get_latest_img():
-    res = send_file('../saved_models/data_collection/latest.jpg', mimetype ='image/jpg')
-    res.headers["Cache-Control"] = "no-cache"
-    return res
+@app.route("/predict/hand/image/<filename>", methods=['GET'])
+def predict_hand_image(filename):
+    # Remove surrounding whitespace and check if the filename only contains 
+    # alphanumeric characters, dots and underscores.
+    filename = filename.strip()
+    if not re.match(r"^[\w\d._]*$", filename):
+        return "Invalid filename", 400
+    
+    filepath = os.path.join('../saved_models/data_collection/', filename)
+    if not os.path.isfile(filepath):
+        return "File not found", 404
+
+    return send_file(filepath), 200
