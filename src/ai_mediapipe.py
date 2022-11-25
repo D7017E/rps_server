@@ -35,10 +35,8 @@ def load_model(joint_document):
 
 
 def predict(image, generate_data=False) -> Prediction:
-    img = cv2.flip(image, 1)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-    result = hands.process(img)
+    image_raw = image.copy()
+    result = hands.process(image)
 
     if result.multi_hand_landmarks is not None:
         for res in result.multi_hand_landmarks:
@@ -64,32 +62,57 @@ def predict(image, generate_data=False) -> Prediction:
             data = np.array([angle], dtype=np.float32)
             ret, results, neighbours, dist = knn.findNearest(data, 3)
             idx = int(results[0][0])
+            
             if generate_data:
-                save_data_to(data, image)
+                # Place captured gesture on image
+                cv2.putText(image, text=Prediction(idx).name, org=(int(res.landmark[0].x * image.shape[1]), int(res.landmark[0].y * image.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
+                mp.solutions.drawing_utils.draw_landmarks(image, res, mp.solutions.hands.HAND_CONNECTIONS)
+                # Save data
+                save_data_to(data, image_raw, image)
             return Prediction(idx)
     else:
         return Prediction(0)
 
-def save_data_to(data, image):
+def save_data_to(data, image_raw, image_processed):
+    """
+    Save joint data to csv file and images to jpg files. The filenames will be 
+    a unique id for the joint data and the images.
+
+    The files generated are:
+    - <id>.csv: The joint data
+    - <id>_raw.jpg: The raw image
+    - <id>_processed.jpg: The processed image
+
+    Parameters
+    ----------
+    data : np.array
+        The joint data
+    image_raw : np.array
+        The raw image without any gestures
+    image_processed : np.array
+        The processed image with the gesture
+    
+    Returns
+    -------
+    None
+    """
     data_id = uuid.uuid4().hex
     joint_filename = data_id + ".csv"
-    image_filename = data_id + ".jpg"	
-    latest_filename = "latest.jpg"
+    image_raw_filename = data_id + "_raw.jpg"
+    image_processed_filename = data_id + "_processed.jpg"
 
     path_to_directory = os.path.join(ai_model_dir, "data_collection")
     if not os.path.exists(path_to_directory):
         os.makedirs(path_to_directory)
 
     joint_filepath = os.path.join(path_to_directory, joint_filename)
-    image_filepath = os.path.join(path_to_directory, image_filename)
-    latest_filepath = os.path.join(path_to_directory, latest_filename)
+    image_raw_filepath = os.path.join(path_to_directory, image_raw_filename)
+    image_processed_filepath = os.path.join(path_to_directory, image_processed_filename)
 
     joint_coordinates_str = ",".join(map(str, np.around(data[0], decimals=6)))
 
     f = open(joint_filepath, "w")
     f.write(joint_coordinates_str)
     f.close()
-    cv2.imwrite(image_filepath, image)
-    cv2.imwrite(latest_filepath, image)
-
-    print("Saved data to: " + joint_filepath)
+    cv2.imwrite(image_raw_filepath, image_raw)
+    cv2.imwrite(image_processed_filepath, image_processed)
