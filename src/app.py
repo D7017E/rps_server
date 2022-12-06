@@ -62,7 +62,7 @@ def predict_hand_image(filename):
     if not re.match(r"^[\w\d._]*$", filename):
         return "Invalid filename", 400
     
-    filepath = os.path.join('../saved_models/data_collection/', filename)
+    filepath = os.path.join(os.path.dirname(__file__), '../saved_models/data_collection/', filename)
     if not os.path.isfile(filepath):
         return "File not found", 404
 
