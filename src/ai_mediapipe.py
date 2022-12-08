@@ -34,7 +34,22 @@ def load_model(joint_document):
     knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 
 
-def predict(image, generate_data=False) -> Prediction:
+def predict(image, generate_data=False) -> (Prediction, str or None):
+    """
+    Predict the gesture from the image.
+
+    Parameters
+    ----------
+    image : np.array
+        The image to predict the gesture from
+    generate_data : bool, optional
+        If true, the data will be saved to csv and jpg files, by default False
+    
+    Returns
+    -------
+    Tuple(Prediction, str or None)
+        The predicted gesture and the unique id for the data generated, `None` if generate_data is `False`
+    """
     image_raw = image.copy()
     result = hands.process(image)
 
@@ -63,17 +78,18 @@ def predict(image, generate_data=False) -> Prediction:
             ret, results, neighbours, dist = knn.findNearest(data, 3)
             idx = int(results[0][0])
             
+            data_id = None
             if generate_data:
                 # Place captured gesture on image
                 cv2.putText(image, text=Prediction(idx).name, org=(int(res.landmark[0].x * image.shape[1]), int(res.landmark[0].y * image.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
                 mp.solutions.drawing_utils.draw_landmarks(image, res, mp.solutions.hands.HAND_CONNECTIONS)
                 # Save data
-                save_data_to(data, image_raw, image)
-            return Prediction(idx)
+                data_id = save_data_to(data, image_raw, image)
+            return Prediction(idx), data_id
     else:
         return Prediction(0)
 
-def save_data_to(data, image_raw, image_processed):
+def save_data_to(data, image_raw, image_processed) -> str:
     """
     Save joint data to csv file and images to jpg files. The filenames will be 
     a unique id for the joint data and the images.
@@ -94,7 +110,8 @@ def save_data_to(data, image_raw, image_processed):
     
     Returns
     -------
-    None
+    str
+        The unique id for the data generated
     """
     data_id = uuid.uuid4().hex
     joint_filename = data_id + ".csv"
@@ -116,3 +133,5 @@ def save_data_to(data, image_raw, image_processed):
     f.close()
     cv2.imwrite(image_raw_filepath, image_raw)
     cv2.imwrite(image_processed_filepath, image_processed)
+
+    return data_id
