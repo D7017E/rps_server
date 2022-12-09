@@ -136,4 +136,4 @@ def save_data_to(data, image_raw, image_processed) -> ImageBox:
     cv2.imwrite(image_raw_filepath, image_raw)
     cv2.imwrite(image_processed_filepath, image_processed)
 
-    return ImageBox(image_raw_filename, image_processed_filename)
+    return ImageBox(image_processed_filename, image_raw_filename)
