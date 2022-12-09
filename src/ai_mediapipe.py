@@ -89,7 +89,7 @@ def predict(image, generate_data=False) -> (Prediction, ImageBox or None):
                 images = save_data_to(data, image_raw, image)
             return Prediction(idx), images
     else:
-        return Prediction(0)
+        return Prediction(0), None
 
 def save_data_to(data, image_raw, image_processed) -> ImageBox:
     """
