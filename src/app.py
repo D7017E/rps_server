@@ -18,7 +18,8 @@ ai_mediapipe.load_model("gesture_train.csv")
 def weighted_prediction(prediction_list: list[tuple[Prediction, ImageBox or None]]) -> tuple[Prediction, ImageBox or None]:
     """
     Takes the list of individual predictions and returns the weighted 
-    output. Later predictions are valued higher.
+    output. Later predictions, i.e. more recent predictions, are valued higher 
+    than predictions made on older images.
 
     Parameters
     ----------
@@ -32,7 +33,6 @@ def weighted_prediction(prediction_list: list[tuple[Prediction, ImageBox or None
         except:
             print("Unhandled prediction")
     prediction = max(predictions, key=predictions.get)
-    print(prediction)
 
     # Get the data id for the prediction
     filtered_prediction_list = list(filter(lambda pred: pred[0] == prediction, prediction_list))
