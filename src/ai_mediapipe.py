@@ -3,6 +3,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 from prediction import Prediction
+from imagebox import ImageBox
 import uuid
 
 ai_model_dir = os.path.join(os.path.dirname(__file__), "../saved_models/")
@@ -34,7 +35,23 @@ def load_model(joint_document):
     knn.train(angle, cv2.ml.ROW_SAMPLE, label)
 
 
-def predict(image, generate_data=False) -> Prediction:
+def predict(image, generate_data=False) -> (Prediction, ImageBox or None):
+    """
+    Predict the gesture from the image.
+
+    Parameters
+    ----------
+    image : np.array
+        The image to predict the gesture from
+    generate_data : bool, optional
+        If true, the data will be saved to csv and jpg files, by default False
+    
+    Returns
+    -------
+    Tuple(Prediction, ImageBox or None)
+        The predicted gesture and the image box containing the saved images, 
+        image box will be `None` if generate_data is `False`.
+    """
     image_raw = image.copy()
     result = hands.process(image)
 
@@ -63,17 +80,18 @@ def predict(image, generate_data=False) -> Prediction:
             ret, results, neighbours, dist = knn.findNearest(data, 3)
             idx = int(results[0][0])
             
+            images = None
             if generate_data:
                 # Place captured gesture on image
                 cv2.putText(image, text=Prediction(idx).name, org=(int(res.landmark[0].x * image.shape[1]), int(res.landmark[0].y * image.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
                 mp.solutions.drawing_utils.draw_landmarks(image, res, mp.solutions.hands.HAND_CONNECTIONS)
                 # Save data
-                save_data_to(data, image_raw, image)
-            return Prediction(idx)
+                images = save_data_to(data, image_raw, image)
+            return Prediction(idx), images
     else:
-        return Prediction(0)
+        return Prediction(0), None
 
-def save_data_to(data, image_raw, image_processed):
+def save_data_to(data, image_raw, image_processed) -> ImageBox:
     """
     Save joint data to csv file and images to jpg files. The filenames will be 
     a unique id for the joint data and the images.
@@ -94,7 +112,8 @@ def save_data_to(data, image_raw, image_processed):
     
     Returns
     -------
-    None
+    ImageBox
+        The image box containing the saved images.
     """
     data_id = uuid.uuid4().hex
     joint_filename = data_id + ".csv"
@@ -116,3 +135,5 @@ def save_data_to(data, image_raw, image_processed):
     f.close()
     cv2.imwrite(image_raw_filepath, image_raw)
     cv2.imwrite(image_processed_filepath, image_processed)
+
+    return ImageBox(image_processed_filename, image_raw_filename)
