@@ -90,9 +90,9 @@ Debug mode will reload the application when changes are made to the source code 
     "shape": [height, width, channels]
 }
 ```
-image_list: An array of base64 encoded images
+image_list: Is an array of base64 encoded images.
 
-shape: Shape of the images in the format of [height, width, channels]
+shape: Describes the dimensions of the images in the format of [height, width, channels].
 
 * Response:
 
@@ -107,7 +107,7 @@ shape: Shape of the images in the format of [height, width, channels]
 }
 ```
 
-* prediction: A string representing the predicted gesture
+prediction: A string representing the predicted gesture.
 images: An array of URLs to the images processed by the API. This field will be None if the images were not stored.
 
 
