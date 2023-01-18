@@ -89,7 +89,7 @@ Takes a list of Base64 encoded images along with along with information about th
     * a string representation of a numpy [dtyp](https://numpy.org/doc/stable/reference/arrays.dtypes.html)
 * Returns
   * "prediction": \<str>
-    * string representation of predictade gesture, or fail state
+    * string representation of predicted gesture, or fail state
   * "images": { processed: str, raw: str }
     * url path on server for the image used to predict image, or None
 
