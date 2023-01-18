@@ -73,3 +73,25 @@ flask --app src/app.py --debug run
 ```
 
 Debug mode will reload the application when changes are made to the source code and also provide a debugger in case of an exception to display traceback in browser.
+
+## Endpoints
+
+There are two endpoints for the RPS-server `/predict/hand` and `/predict/hand/image/<filename>`. Where `/predict/hand/` is used to query the AI-model for the game gesture shown in a attached image. `/predict/hand/image/<filename>` is used to retrieve the image with the graphed points from mediapipe. This modified image is displayed to users to as a visual aid when announcing results from game-rounds.
+
+### GET `/predict/hand/`
+Takes a list of Base64 encoded images along with along with information about the image dimensions.
+* Takes
+  * "image_list": [Base64, ...]
+    * Currently only uses the first image from the list
+  * "shape": [int, int, int]
+    * shape order is, [height, width, channels]
+  * "dtype": \<str>
+    * a string representation of a numpy [dtyp](https://numpy.org/doc/stable/reference/arrays.dtypes.html)
+* Returns
+  * "prediction": \<str>
+    * string representation of predicted gesture, or fail state
+  * "images": { processed: str, raw: str }
+    * url path on server for the image used to predict image, or None
+
+### GET `/predict/hand/image/<filename>`
+The `/predict/hand/image/<filename>` endpoint allows for retrieving the images that were processed by the AI-model. This endpoint does not take any data outside of the url, where the \<filename> designates the location of the image on the server. This is given to the API-user when a prediction request is sent. When called on an existing file path the endpoint returns that image stored there.
