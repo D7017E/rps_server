@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  push:
+    tags:
+      - v*
+
+env:
+  DOCKER_REPO: pepperonit/rps_server
+
+jobs:
+
+  build_and_publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Docker login
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
+      
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ${{env.DOCKER_REPO}}:$GITHUB_REF_NAME --tag ${{env.DOCKER_REPO}}:latest
+      
+    - name: Docker Push
+      run: docker push ${{env.DOCKER_REPO}} --all-tags
+      
+    - name: Docker remove runner config
+      run: rm /home/runner/.docker/config.json
