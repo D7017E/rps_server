@@ -18,7 +18,7 @@ To automatically pull the latest version of the pre-built image and create a con
 docker run -d --name rps_server -p 5000:5000 -e RPS_SCHEMA_HOSTNAME=<HOSTNAME> pepperonit/rps_server:latest
 ```
 
-Replace `<HOSTNAME>` with the external hostname used by the end-user to access the server. For example, if the server is running on a machine, accessible at `https://example.com:5400`, then the value of `<HOSTNAME>` should be `https://example.com:5400`. To run the server attached to the current terminal, remove the `-d` option from the command above.
+Replace `<HOSTNAME>` with the external hostname used by the end-user to access the server. For example, if the server is running on a machine, accessible at `https://example.com:5000`, then the value of `<HOSTNAME>` should be `https://example.com:5000`. To run the server attached to the current terminal, remove the `-d` option from the command above.
 
 The server is now running on port 5000 on your local machine and should be accessible at [http://localhost:5000](http://localhost:5000).
 
@@ -26,10 +26,10 @@ The server is now running on port 5000 on your local machine and should be acces
 
 #### Run the server with the latest image
 
-Run the server with the hostname `https://example.com:5400` using the latest version of the image:
+Run the server with the hostname `https://example.com:5000` using the latest version of the image:
 
 ```bash
-docker run -d -p 5000:5000 -e RPS_SCHEMA_HOSTNAME="https://example.com:5400" pepperonit/rps_server:latest
+docker run -d -p 5000:5000 -e RPS_SCHEMA_HOSTNAME="https://example.com:5000" pepperonit/rps_server:latest
 ```
 
 #### Persistent storage of images and joint coordinates
@@ -39,7 +39,7 @@ Run the server with a volume mounted to the container to store any images saved 
 ```bash
 docker run -d -p 5000:5000 --name rps_server \
   -v /home/pepper/rps/saved_models/data_collection:/app/saved_models/data_collection \
-  -e RPS_SCHEMA_HOSTNAME="https://example.com:5400" \
+  -e RPS_SCHEMA_HOSTNAME="https://example.com:5000" \
   pepperonit/rps_server:latest
 ```
 
