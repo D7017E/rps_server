@@ -1,97 +1,77 @@
 # Rock-Paper-Scissors
 
-A server application to expose an interface to an saved TensorFlow model and use it to identify a gesture from an image.
+A web service to expose an interface to an AI model to identify a rock, paper, and scissors hand gesture in images of a person. The AI model is a combination of the MediaPipe hand detection model and a KNN utilizing a dataset of joint coordinates of a person's making a rock, paper, and scissors gesture.
 
-## Prerequisites
+This web service is one part of a project to make the robot [Pepper](https://www.aldebaran.com/en/pepper) play a game of rock paper scissors. See the [Rock-Paper-Scissors](https://github.com/PepperonIT/Rock-Paper-Scissors) repository for more information.
 
-- Python 3.10 - [Download and install Python](https://www.python.org/downloads/).
+## Tools
 
-- Docker - [Download and install Docker](https://docs.docker.com/get-docker/). This is required to run the application in a container.
-
-### Install dependencies
-
-Use Pip to install the dependencies required to run the application.
-
-```bash
-pip install -r requirements.txt
-```
+- Docker - [Download and install Docker](https://docs.docker.com/get-docker/).
 
 ## Usage
 
-The trained AI model should be created according to the structure presented in the TensorFlow documentation [save and serialize models](https://www.tensorflow.org/guide/keras/save_and_serialize#savedmodel_format) and must be placed in the `saved_models` directory.
+A pre-built Docker image is available on [Docker Hub](https://hub.docker.com/r/pepperonit/rps_server). If you want to build your image from the source, refer to the [development guide](CONTRIBUTING.md) for more information on how to build the image.
 
-The table below shows the environment variables available to configure the application. These variables can be set in the current terminal using the `export` command, e.g. `export RPS_SCHEMA_HOSTNAME=https://example.com/`.
-
-| Variable              | Default                  | Description                                                  |
-| --------------------- | ------------------------ | ------------------------------------------------------------ |
-| `RPS_SCHEMA_HOSTNAME` | `http://localhost:5000/` | The external hostname used by end-user to access the server. |
-
-### Run the application
-
-Start the application with:
+To automatically pull the latest version of the pre-built image and create a container with it, use the following command:
 
 ```bash
-flask --app src/app.py run
+docker run -d --name rps_server -p 5000:5000 -e RPS_SCHEMA_HOSTNAME=<HOSTNAME> pepperonit/rps_server:latest
 ```
 
-### Run the application in a container
-
-Build the container with:
-
-```bash
-docker build -t rps_server .
-```
-
-Run the container with:
-
-```bash
-docker run -d --name rps_server -p 5000:5000 rps_server
-```
+Replace `<HOSTNAME>` with the external hostname used by the end-user to access the server. For example, if the server is running on a machine, accessible at `https://example.com:5400`, then the value of `<HOSTNAME>` should be `https://example.com:5400`. To run the server attached to the current terminal, remove the `-d` option from the command above.
 
 The server is now running on port 5000 on your local machine and should be accessible at [http://localhost:5000](http://localhost:5000).
 
-## Development
+### Examples
 
-### Dependencies
+#### Run the server with the latest image
 
-All dependencies are managed by pip and are listed in the `requirements.txt` file.
-
-If a new dependency is added, make sure to update the requirement file with name and version of the new dependency. The same applies when removing a dependency. To automatically update the requirements file `requirements.txt`, run:
+Run the server with the hostname `https://example.com:5400` using the latest version of the image:
 
 ```bash
-pipreqs
+docker run -d -p 5000:5000 -e RPS_SCHEMA_HOSTNAME="https://example.com:5400" pepperonit/rps_server:latest
 ```
 
-NOTE: This will overwrite the existing `requirements.txt` file and will not take into account any manual changes made to the file such as manually specified package versions.
+#### Persistent storage of images and joint coordinates
 
-### Flask debug mode
-
-To enable debug mode, use the `--debug` option when starting the application:
+Run the server with a volume mounted to the container to store any images saved by the server during a gesture prediction. This is useful for any debugging purposes or to store the images for future training of the AI model. The volume should be mounted to the `/app/saved_models/data_collection` directory in the container.
 
 ```bash
-flask --app src/app.py --debug run
+docker run -d -p 5000:5000 --name rps_server \
+  -v /home/pepper/rps/saved_models/data_collection:/app/saved_models/data_collection \
+  -e RPS_SCHEMA_HOSTNAME="https://example.com:5400" \
+  pepperonit/rps_server:latest
 ```
-
-Debug mode will reload the application when changes are made to the source code and also provide a debugger in case of an exception to display traceback in browser.
 
 ## Endpoints
 
-There are two endpoints for the RPS-server `/predict/hand` and `/predict/hand/image/<filename>`. Where `/predict/hand/` is used to query the AI-model for the game gesture shown in a attached image. `/predict/hand/image/<filename>` is used to retrieve the image with the graphed points from mediapipe. This modified image is displayed to users to as a visual aid when announcing results from game-rounds.
+There are two endpoints for the RPS-server `/predict/hand` and `/predict/hand/image/<filename>`. Where `/predict/hand/` is used to query the AI-model for the game gesture shown in the attached image. `/predict/hand/image/<filename>` is used to retrieve the image with the graphed points from mediapipe. This modified image is displayed to users as a visual aid when announcing results from game rounds.
 
 ### GET `/predict/hand/`
-Takes a list of Base64 encoded images along with along with information about the image dimensions.
+
+Takes a list of Base64 encoded images along with information about the image dimensions and data type. All images must be the same dimensions and data type. If the images do not have the same dimensions and data type, the request will fail and return an error.
+
 * Takes
   * "image_list": [Base64, ...]
     * Currently only uses the first image from the list
   * "shape": [int, int, int]
     * shape order is, [height, width, channels]
   * "dtype": \<str>
-    * a string representation of a numpy [dtyp](https://numpy.org/doc/stable/reference/arrays.dtypes.html)
+    * a string representation of a numpy [dtype](https://numpy.org/doc/stable/reference/arrays.dtypes.html)
 * Returns
   * "prediction": \<str>
     * string representation of predicted gesture, or fail state
   * "images": { processed: str, raw: str }
-    * url path on server for the image used to predict image, or None
+    * URL path on server for the image used to predict image, or None
 
 ### GET `/predict/hand/image/<filename>`
-The `/predict/hand/image/<filename>` endpoint allows for retrieving the images that were processed by the AI-model. This endpoint does not take any data outside of the url, where the \<filename> designates the location of the image on the server. This is given to the API-user when a prediction request is sent. When called on an existing file path the endpoint returns that image stored there.
+
+The `/predict/hand/image/<filename>` endpoint allows for retrieving the images that were processed by the AI-model. This endpoint does not take any data outside of the URL, where the \<filename> designates the location of the image on the server. This is given to the API user when a prediction request is sent. When called on an existing file path the endpoint returns that image stored there.
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to set up the development environment on your local machine and how to suggest changes or enhancements to the project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
